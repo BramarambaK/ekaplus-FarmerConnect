@@ -1,0 +1,9 @@
+{
+    "_id" : "eka_farmerconnect_host",
+    "type" : "property",
+    "name" : "eka_farmerconnect_host",
+    "propertyLevel" : "tenant, app, user",
+    "dataType" : "String",
+    "fieldtype" : "textbox",
+    "length" : "120"
+} 

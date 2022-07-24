@@ -1,0 +1,45 @@
+{
+    "_id" : "FarmerConnectApp",
+    "title" : "Farmer Connect",
+    "name" : "farmerconnect",
+    "platform_id" : "22",
+    "tenantID" : "",
+    "type" : "app",
+    "appType" : "CONNECT",
+    "config" : {
+        "header" : {
+            "brand" : {
+                "src" : "assets/img/brand/eka-login-logo.png",
+                "width" : 60.0,
+                "height" : 20.0,
+                "alt" : "Eka"
+            },
+            "clientLogo" : {
+                "src" : "assets/img/brand/manuchar.png",
+                "width" : 60.0,
+                "height" : 20.0,
+                "alt" : "Boliden"
+            },
+            "sidebarToggler" : true,
+            "asideMenuToggler" : false
+        },
+        "sidebar" : {
+            "fixed" : true,
+            "display" : false
+        },
+        "navbar" : [ 
+            {
+                "apiMenuData" : [ 
+                    {
+                        "menu" : []
+                    }
+                ]
+            }
+        ],
+        "aside" : {
+            "fixed" : true,
+            "display" : false
+        }
+    },
+    "sys__UUID" : "0b5e4841-798b-4d6e-a674-afc642b676b3"
+}

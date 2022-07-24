@@ -1,0 +1,8 @@
+{
+    "_id" : "eka_ctrm_host_fc",
+    "propertyLevel" : "app",
+    "propertyName" : "eka_ctrm_host",
+    "propertyValue" : "http://172.16.5.131:7101",
+    "refTypeId" : "0b5e4841-798b-4d6e-a674-afc642b676b3",
+    "type" : "property"
+}

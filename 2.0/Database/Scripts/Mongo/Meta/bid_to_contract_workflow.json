@@ -1,0 +1,19 @@
+{
+    "_id" : "bid_to_contract_workflow",
+    "componentType" : "ChainedSystemTask",
+    "object" : "bfa71e11-4fb3-4c02-9c3a-fd6dd87dd4ad",
+    "objectAction" : "CREATE",
+    "taskId" : "bidToContract",
+	"tags":"listener,DS-Bid To Contract",
+    "refType" : "app",
+    "refTypeId" : "0b5e4841-798b-4d6e-a674-afc642b676b3",
+    "type" : "workflow",
+    "version":"V2",
+    "chainedTasks" : [ 
+				{
+                    "name" : "_EXT_CALL_BID_TO_CONTRACT",
+					"data":"output.bidToContract",
+                    "appendMsg" : false
+                }
+    ]
+}
