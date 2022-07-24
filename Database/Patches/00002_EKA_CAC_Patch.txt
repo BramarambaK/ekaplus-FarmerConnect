@@ -1,0 +1,40 @@
+Patch No                    :  00001_EKA_CAC_Patch
+
+Project / Product           :  3.18.0
+==================================================================
+Created by                  :  Shiva Chutani
+ 
+Created on                  :  26-Nov-2019
+
+Bug / Enhancement           :  
+==================================================================
+Module / Feature Group:
+==================================================================
+Module                      :  Farmer Connect
+
+
+Bug ID / Enhancement        :  
+
+ 
+Sub-Module                  :  
+ 
+Section                     :  N/A  
+ 
+Screen                      :  N/A
+ 
+FS Number and Clause No.    :  N/A
+ 
+FS Enhancement details      :  N/A
+ 
+FS Amendment details        :  N/A
+
+dependent code patches      :  -
+
+Remarks                     :  -
+ 
+Related DB Patches          :  N/A
+
+==================================================================
+
+scripts:
+Database/Scripts/MySQL/00002_Master.sql

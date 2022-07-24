@@ -1,0 +1,160 @@
+apply plugin: 'java'
+apply plugin: 'maven-publish'
+archivesBaseName = 'farmerconnect'
+
+defaultTasks 'clean','buildAndDeploy'
+
+configurations {
+	wardependency
+		compile.exclude module: 'FEAIntegration'
+        compile.exclude module: 'RiskAPI_Enterprise'
+}
+
+ext {
+	groupId = "$GROUP_ID"
+	appVersion = "$VERSION"
+	warVersion = "$CORE_WAR_VERSION"
+	NEXUS_URL = "$NEXUS_URL"
+	DEPLOY_DIR="$JETTY_HOME/$JETTY_DEPLOY_DIR"
+	WAR_DIR="$JETTY_HOME/$JETTY_DEPLOY_DIR/$FINAL_WAR_ARCHIVE_NAME"
+}
+
+group = groupId
+version = appVersion
+
+repositories {
+	maven {
+		url project.ext.NEXUS_URL
+        }
+	mavenCentral()
+}
+
+dependencies {
+	compile group: groupId, name: 'eka-gui', version: warVersion, ext: 'war', transitive :true
+	compile group: 'org.apache.httpcomponents', name: 'fluent-hc', version: '4.5.2'
+	compile group: 'org.springframework', name: 'spring-webflux', version: '5.2.17.RELEASE'
+	compile('org.eclipse.jetty:jetty-client:9.4.14.v20181114'){
+		force = true
+	}
+	compile 'org.springframework:spring-context:5.2.17.RELEASE',
+            'org.springframework:spring-context-support:5.2.17.RELEASE',
+            'org.springframework:spring-webmvc:5.2.17.RELEASE',
+            'com.opencsv:opencsv:3.3'
+	compile group: 'org.eclipse.jetty', name: 'jetty-reactive-httpclient', version: '1.0.3'
+	wardependency(
+		[group: groupId, name: 'eka-gui', version: warVersion, ext: 'war']
+	)
+}
+
+task sourceJar(type: Jar) << {
+	println 'Generating source documentation'
+	from sourceSets.main.allJava
+}
+
+task buildAppWar(type: War) {
+	println 'Building app specific war'
+   	from 'src/main/webapp'
+}
+
+task copyApp << {
+
+	println 'Copying app specific war and jar to jetty'
+	copy {
+		from 'build/libs' 
+		into rootProject.ext.WAR_DIR + "/WEB-INF/lib"
+		include '*.jar'
+	}	
+	
+	def webout = 'build/libs/webapp'
+	ant.unzip(src: buildAppWar.archivePath, dest: webout)
+	copy {
+		from webout 
+		into rootProject.ext.WAR_DIR + "/apps/platform/app/ekacac"
+		exclude archivesBaseName + '/view'
+	}
+	copy {
+		from webout + '/' + archivesBaseName + '/view/classic'
+		into rootProject.ext.WAR_DIR + "/apps/platform/classic/src/ekacac/"+archivesBaseName+"/view"
+	}
+	copy {
+		from webout + '/' + archivesBaseName + '/view/modern'
+		into rootProject.ext.WAR_DIR + "/apps/platform/modern/src/"+archivesBaseName+"/view"
+	}
+	new File(webout).deleteDir()
+}
+
+task buildAndDeploy(dependsOn: ['build', 'buildAppWar','copyApp'])
+
+task unzipCore << {
+
+	println 'Unzip all the war dependencies...'
+	configurations.wardependency.each { 
+		if(it.name.contains('eka-gui')){
+			println it
+			ant.unzip(src: it, dest: 'build/libs/exploded') 
+		} else {
+			ant.unzip(src: it, dest: 'build/libs/exploded/platform/app/ekacac') 
+		}
+	}	
+} 
+
+task copyCore << {
+
+	println 'Copying core components to server'
+	def explodePath = 'build/libs/exploded'	
+	
+	copy {
+		from explodePath
+		into rootProject.ext.WAR_DIR
+		exclude 'platform','realtimePnL'
+	}
+
+	copy {
+		println 'Copying platform app'
+		from explodePath + '/platform'
+		into rootProject.ext.WAR_DIR
+	}
+
+	copy {
+		println 'Copying Realtime pnl app'
+		from explodePath + '/realtimePnL'
+		into rootProject.ext.WAR_DIR
+	}		
+}
+
+task buildAndDeployWithCore(dependsOn: ['unzipCore', 'copyCore', 'buildAndDeploy'])
+copyCore.mustRunAfter unzipCore
+buildAndDeploy.mustRunAfter copyCore
+
+publishing {
+    publications {
+    	
+        impl(MavenPublication) {
+	    artifactId archivesBaseName
+            from components.java
+	
+	    artifact buildAppWar
+            /*artifact sourceJar {
+                classifier "sources"
+            }*/
+        }
+    }   
+    repositories {
+          maven {
+		url project.ext.NEXUS_URL
+		credentials {
+		     username = 'admin'
+		     password = 'admin123'
+		}
+	}
+    }
+}
+
+
+buildscript {
+  repositories {
+    maven {
+      url "https://plugins.gradle.org/m2/"}}
+  dependencies {
+    classpath "org.sonarsource.scanner.gradle:sonarqube-gradle-plugin:3.3"}}
+apply plugin: "org.sonarqube"
